@@ -41,7 +41,7 @@ export default function Signin() {
     if (result?.error) {
       setError("Invalid email or password.");
     } else {
-      window.location.href = "/";
+      window.location.href = "/files";
     }
   }
 
@@ -176,7 +176,7 @@ export default function Signin() {
                 <span className="text-white/45 text-sm leading-5">
                   Don't have an account?
                 </span>
-                <a className="font-medium text-[#4A9EFF] text-sm leading-5 cursor-pointer">
+                <a href="/auth/signup" className="font-medium text-[#4A9EFF] text-sm leading-5 cursor-pointer">
                   Create one for free
                 </a>
               </CardFooter>

@@ -6,6 +6,8 @@ import { AsyncCallbackSet } from "next/dist/server/lib/async-callback-set";
 
 import { JWT } from "next-auth/jwt";
 import { DefaultSession } from "next-auth";
+import { prisma } from "@/lib/prisma";
+import bcrypt from "bcryptjs";
 
 declare module 'next-auth/jwt' {
   interface JWT{
@@ -30,6 +32,7 @@ export const authOptions:NextAuthOptions = {
     Credentials({
       name: "Credentials",
       credentials: {
+        name:{label:"Name" , placeholder :"Name" , type:"text"},
         email: { label: "Email", placeholder: "", type: "email" },
         password: { label: "Password", placeholder: "", type: "password" },
       },
@@ -37,14 +40,34 @@ export const authOptions:NextAuthOptions = {
         if (!credentials?.email || !credentials?.password) {
           return null;
         }
+        const user = await prisma.user.findFirst({
+          where:{email:credentials.email}
+        })
 
-        
-        
+        if (!user){
+          const hashedPassword=await bcrypt.hash(credentials.password,10)
+          const newuser=await prisma.user.create({
+            data:{
+              name:credentials.name,
+              email:credentials.email,
+              password:hashedPassword
+            }
+          })
+          return {
+            id:newuser.id,
+            name:newuser.name,
+            email:newuser.email
+          }
+        }
+        const comparepassword= await bcrypt.compare(credentials.password,user.password)
+        if (!comparepassword){
+          return null
+        }
         return {
-          id: "2",
-          email:credentials.email,
+          id:user.id,
+          email:user.email,
+          name:user.name,
           
-          name: "hello",
         };
       },
       

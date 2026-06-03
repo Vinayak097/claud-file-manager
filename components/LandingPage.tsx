@@ -21,8 +21,10 @@ import {
   CardFooter,
   CardHeader,
 } from "@/components/ui/card";
-
+import Navbar from "./Navbar";
+import { useRouter } from "next/navigation";
 export default function LandingPage() {
+  const router=useRouter()
   return (
     <div>
       <div className="bg-[#0A1628] text-white w-full h-fit h-fit min-h-screen w-screen min-w-screen max-w-screen overflow-visible">
@@ -36,33 +38,18 @@ export default function LandingPage() {
                 CloudVault
               </span>
             </div>
-            <nav className="text-sm leading-5 flex items-center gap-6">
-              <a className="font-medium text-white border-[#4A9EFF] border-t-0 border-r-0 border-b-2 border-l-0 border-solid flex pb-1 items-center gap-2">
-                <Cloud className="size-4 text-[#4A9EFF]" />
-                CloudVault
-              </a>
-              <a className="border-transparent text-white/60 border-black/1 border-t-0 border-r-0 border-b-2 border-l-0 border-solid flex pb-1 items-center gap-2">
-                <FileText className="size-4" />
-                Files
-              </a>
-              <a className="border-transparent text-white/60 border-black/1 border-t-0 border-r-0 border-b-2 border-l-0 border-solid flex pb-1 items-center gap-2">
-                <Share2 className="size-4" />
-                Shared
-              </a>
-              <a className="border-transparent text-white/60 border-black/1 border-t-0 border-r-0 border-b-2 border-l-0 border-solid flex pb-1 items-center gap-2">
-                <Trash2 className="size-4" />
-                Trash
-              </a>
-            </nav>
+            <Navbar></Navbar>
           </div>
           <div className="flex items-center gap-4">
             <Button
+            onClick={()=>{router.push("/auth/signin")}}
               variant="outline"
               className="bg-transparent rounded-lg text-white border-[#4A9EFF] border-0 border-solid px-5"
             >
               Sign In
             </Button>
-            <Button className="shadow-[0_0_20px_rgba(74,158,255,0.4)] rounded-lg bg-[#4A9EFF] text-white px-5">
+            <Button
+            onClick={()=>{router.push("/auth/signup")}} className="shadow-[0_0_20px_rgba(74,158,255,0.4)] rounded-lg bg-[#4A9EFF] text-white px-5">
               Get Started
             </Button>
           </div>

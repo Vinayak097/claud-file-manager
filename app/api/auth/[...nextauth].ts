@@ -50,7 +50,7 @@ export const authOptions: NextAuthOptions = {
         }
         const comparepassword = await bcrypt.compare(
           credentials.password,
-          user.password,
+          user.password || "fake",
         );
         if (!comparepassword) {
           return null;
@@ -65,24 +65,23 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     async signIn({ user, account }) {
-      if (!user.email) {
-        return false;
-      }
-      if (account?.provider == "google") {
-        const userExist = await prisma.user.findFirst({
-          where: {
-            email: user.email,
-          },
+      if (!user.email) return false;
+
+      if (account?.provider === "google") {
+        // If a user exists, attach their id so jwt callback receives it.
+        const existing = await prisma.user.findFirst({
+          where: { email: user.email },
         });
-        if (userExist) {
-          return false;
+        if (existing) {
+          (user as any).id = existing.id;
+          return true;
         }
-        await prisma.user.create({
-          data: {
-            email: user.email,
-            name: user.name,
-          },
+
+        const created = await prisma.user.create({
+          data: { email: user.email, name: user.name },
         });
+        (user as any).id = created.id;
+        return true;
       }
 
       return true;
@@ -103,6 +102,7 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
   },
+  secret: process.env.AUTH_SECRET!,
 };
 
 export default NextAuth(authOptions);

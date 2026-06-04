@@ -165,7 +165,7 @@ export default function Signin() {
                 </div>
                 <Button
                   variant="outline"
-                  onClick={() => signIn("google", { callbackUrl: "/" })}
+                  onClick={() => signIn("google", { callbackUrl: "/files" })}
                   className="bg-transparent rounded-xl text-white border border-white/15 w-full h-11"
                 >
                   <svg className="size-4" viewBox="0 0 24 24">

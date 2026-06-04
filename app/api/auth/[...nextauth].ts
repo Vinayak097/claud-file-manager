@@ -9,19 +9,19 @@ import { DefaultSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 
-declare module 'next-auth/jwt' {
-  interface JWT{
-    id:string
+declare module "next-auth/jwt" {
+  interface JWT {
+    id: string;
   }
 }
-declare module 'next-auth'{
-  interface Session{
-    user:{
-      id:string
-    }& DefaultSession["user"]
+declare module "next-auth" {
+  interface Session {
+    user: {
+      id: string;
+    } & DefaultSession["user"];
   }
 }
-export const authOptions:NextAuthOptions = {
+export const authOptions: NextAuthOptions = {
   // Configure one or more authentication providers
   providers: [
     Google({
@@ -32,7 +32,7 @@ export const authOptions:NextAuthOptions = {
     Credentials({
       name: "Credentials",
       credentials: {
-        name:{label:"Name" , placeholder :"Name" , type:"text"},
+        name: { label: "Name", placeholder: "Name", type: "text" },
         email: { label: "Email", placeholder: "", type: "email" },
         password: { label: "Password", placeholder: "", type: "password" },
       },
@@ -41,40 +41,52 @@ export const authOptions:NextAuthOptions = {
           return null;
         }
         const user = await prisma.user.findFirst({
-          where:{email:credentials.email}
-        })
+          where: { email: credentials.email },
+        });
 
-        if (!user){
-          const hashedPassword=await bcrypt.hash(credentials.password,10)
-          const newuser=await prisma.user.create({
-            data:{
-              name:credentials.name,
-              email:credentials.email,
-              password:hashedPassword
-            }
-          })
-          return {
-            id:newuser.id,
-            name:newuser.name,
-            email:newuser.email
-          }
+        if (!user) {
+          // Do not auto-create users on sign-in. Signal that account wasn't found.
+          throw new Error("AccountNotFound");
         }
-        const comparepassword= await bcrypt.compare(credentials.password,user.password)
-        if (!comparepassword){
-          return null
+        const comparepassword = await bcrypt.compare(
+          credentials.password,
+          user.password,
+        );
+        if (!comparepassword) {
+          return null;
         }
         return {
-          id:user.id,
-          email:user.email,
-          name:user.name,
-          
+          id: user.id,
+          email: user.email,
+          name: user.name,
         };
       },
-      
     }),
-    
   ],
-   callbacks: {
+  callbacks: {
+    async signIn({ user, account }) {
+      if (!user.email) {
+        return false;
+      }
+      if (account?.provider == "google") {
+        const userExist = await prisma.user.findFirst({
+          where: {
+            email: user.email,
+          },
+        });
+        if (userExist) {
+          return false;
+        }
+        await prisma.user.create({
+          data: {
+            email: user.email,
+            name: user.name,
+          },
+        });
+      }
+
+      return true;
+    },
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
@@ -86,7 +98,7 @@ export const authOptions:NextAuthOptions = {
     async session({ session, token }) {
       if (session.user) {
         session.user.id = token.id as string;
-      } 
+      }
 
       return session;
     },

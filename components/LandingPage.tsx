@@ -70,7 +70,7 @@ export default function LandingPage() {
             Store, access, and share your files securely from any device —
             simple, fast, and reliable.
           </p>
-          <Button className="shadow-[0_0_30px_rgba(74,158,255,0.55)] font-semibold rounded-xl bg-[#4A9EFF] text-white text-base leading-6 mt-8 px-8 py-6">
+          <Button onClick={()=>{router.push('/auth/signin')}} className="cursor-pointer shadow-[0_0_30px_rgba(74,158,255,0.55)] font-semibold rounded-xl bg-[#4A9EFF] text-white text-base leading-6 mt-8 px-8 py-6">
             <Zap className="size-5" />
             Start for Free
           </Button>

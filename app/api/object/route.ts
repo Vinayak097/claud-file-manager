@@ -1,6 +1,40 @@
 import { NextRequest, NextResponse } from "next/server";
+import {
+  S3Client,
+  ListBucketsCommand,
+  ListObjectsV2Command,
+} from "@aws-sdk/client-s3";
 
-export function GET(req:NextRequest,res:NextResponse){
-    return res.json()
+const client = new S3Client({
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY!,
+    secretAccessKey: process.env.AWS_SECRET_KEY!,
+  },
+  region: "ap-southeast-2",
+});
+export async function GET(req: NextRequest) {
+  const prefix = req.nextUrl.searchParams.get("prefix") ?? "";
 
+  console.log(process.env.NEXTAUTH_URL);
+  const command = new ListObjectsV2Command({
+    Bucket: process.env.BUCKET_NAME!,
+    Delimiter: "/",
+    Prefix: prefix,
+  });
+
+  const result = await client.send(command);
+
+  const files =
+    result.Contents?.map((file) => ({
+      key: file.Key,
+      size: file.Size,
+      lastModified: file.LastModified,
+    })) || [];
+
+  const folders = result.CommonPrefixes || [];
+
+  return NextResponse.json({
+    files: files,
+    folders,
+  });
 }

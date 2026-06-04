@@ -37,9 +37,14 @@ export default function Signin() {
       password,
       redirect: false,
     });
+    console.log(" result for signin  "   , result ) 
     setLoading(false);
     if (result?.error) {
-      setError("Invalid email or password.");
+      if (typeof result.error === "string" && result.error.includes("AccountNotFound")) {
+        setError("Account not found. Please create an account.");
+      } else {
+        setError("Invalid email or password.");
+      }
     } else {
       window.location.href = "/files";
     }

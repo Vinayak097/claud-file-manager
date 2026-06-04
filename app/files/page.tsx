@@ -18,11 +18,23 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
 
 export default function page() {
   const [file,setFiles]=useState()
   const [folders,setFolders]=useState()
+ const [user,setUser]=useState<any>()
+ const session = useSession()
+ console.log("user " , user)
+  useEffect(()=>{
+     
+     if(session.data){
+      setUser(session.data.user)
+     }
+  },[])
+
+  
   return (
     <div>
       <div className="bg-zinc-950 text-neutral-50 w-full h-fit h-fit min-h-screen w-screen min-w-screen max-w-screen overflow-visible">

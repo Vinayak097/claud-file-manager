@@ -1,8 +1,6 @@
 import NextAuth, { NextAuthOptions } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
-import GithubProvider from "next-auth/providers/github";
 import Google from "next-auth/providers/google";
-import { AsyncCallbackSet } from "next/dist/server/lib/async-callback-set";
 
 import { JWT } from "next-auth/jwt";
 import { DefaultSession } from "next-auth";
@@ -21,14 +19,13 @@ declare module "next-auth" {
     } & DefaultSession["user"];
   }
 }
+
 export const authOptions: NextAuthOptions = {
-  // Configure one or more authentication providers
   providers: [
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
-    // ...add more providers here
     Credentials({
       name: "Credentials",
       credentials: {
@@ -45,7 +42,6 @@ export const authOptions: NextAuthOptions = {
         });
 
         if (!user) {
-          // Do not auto-create users on sign-in. Signal that account wasn't found.
           throw new Error("AccountNotFound");
         }
         const comparepassword = await bcrypt.compare(
@@ -68,7 +64,6 @@ export const authOptions: NextAuthOptions = {
       if (!user.email) return false;
 
       if (account?.provider === "google") {
-        // If a user exists, attach their id so jwt callback receives it.
         const existing = await prisma.user.findFirst({
           where: { email: user.email },
         });
@@ -90,19 +85,17 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.id = user.id;
       }
-
       return token;
     },
-
     async session({ session, token }) {
       if (session.user) {
         session.user.id = token.id as string;
       }
-
       return session;
     },
   },
-  secret: process.env.AUTH_SECRET!,
+  secret: process.env.NEXTAUTH_SECRET,
 };
 
-export default NextAuth(authOptions);
+const handler = NextAuth(authOptions);
+export { handler as GET, handler as POST };

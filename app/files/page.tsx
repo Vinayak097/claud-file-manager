@@ -18,8 +18,11 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { useState } from "react";
 
 export default function page() {
+  const [file,setFiles]=useState()
+  const [folders,setFolders]=useState()
   return (
     <div>
       <div className="bg-zinc-950 text-neutral-50 w-full h-fit h-fit min-h-screen w-screen min-w-screen max-w-screen overflow-visible">
@@ -82,7 +85,7 @@ export default function page() {
               </div>
               <Button className="bg-[#155dfc] text-[#1c398e] px-4 gap-2">
                 <Upload className="size-4" />
-                Upload
+                Upload  
               </Button>
             </div>
           </div>

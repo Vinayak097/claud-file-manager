@@ -28,7 +28,7 @@ import type { ResponseType } from "@/lib/types/file";
 import Folders from "@/components/Folder";
 
 export default function page() {
-  const [file,setFiles]=useState<TypeFile[]|[]>()
+  const [files,setFiles]=useState<TypeFile[]|[]>([])
   const [folders,setFolders]=useState<TypeFolder[]|[]>([])
   const [profileOpen, setProfileOpen]=useState(false)
  const [user,setUser]=useState<any>()
@@ -39,16 +39,7 @@ export default function page() {
 
  console.log("user " , user)
 
- const data= {
-  files:[{
-    name:'file.pdf',
-    size:233,
-    lastModified:"2026-06-04T07:35:03.000Z"
-  }],
-  Folders:[{
-    name:"/newfolder"
-  }]
- }
+
 
   useEffect(()=>{
      if(session.data){
@@ -69,6 +60,8 @@ export default function page() {
    
     try{
        const response=await fetch(`/api/object?prefix=${prefix}`)
+
+       
     
     if(!response.ok){
       setError("Failed to fetch Files")
@@ -175,14 +168,14 @@ export default function page() {
               Folders
             </h2>
             <div className="grid grid-cols-4 gap-4">
-              {data.Folders.length==0? (
+              {folders.length==0? (
                 <div className="w-md p-2">
                   <p>you dont have any Folders</p>
                 </div>
               ):
               (
               <>
-              {folders.length==0 && folders.map((folder:TypeFolder, i)=>(
+              { folders.map((folder:TypeFolder, i)=>(
                 <Folders key={i} name={folder.name}></Folders>
               ))}
               </>
@@ -204,9 +197,12 @@ export default function page() {
                 <span className="w-8" />
               </div>
               
-              {data.files.length!==0 && (
-                data.files.map((file:any)=>(
-                  <File lastModified={file.lastModified} name={file.name} size={file.size}></File>
+              {files.length!==0 && (
+                files.map((file:any ,i)=>(
+                 
+                    <File key={i} lastModified={file.lastModified} name={file.name} size={file.size}></File>
+
+                 
                 ))
               )}
             </Card>

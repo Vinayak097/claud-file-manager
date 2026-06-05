@@ -14,7 +14,7 @@ const Folders = ({name}:{name:string}) => {
                       {name}
                     </span>
                     <span className="text-white text-xs leading-4">
-                      12 files
+                      
                     </span>
                   </div>
                 </CardContent>

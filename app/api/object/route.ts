@@ -31,7 +31,9 @@ export async function GET(req: NextRequest) {
       lastModified: file.LastModified,
     })) || [];
 
-  const folders = result.CommonPrefixes || [];
+  const folders = result.CommonPrefixes?.map((data)=>({
+    name:data.Prefix
+  })) || [];
 
   return NextResponse.json({
     files: files,

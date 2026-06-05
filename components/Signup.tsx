@@ -63,7 +63,16 @@ export default function Signup() {
       return;
     }
 
-    await signIn("credentials", { email, password, callbackUrl: "/" });
+    setLoading(true);
+    const result = await signIn("credentials", { email, password, redirect: false });
+    setLoading(false);
+
+    if (result?.error) {
+      setError("Account created but sign-in failed. Please sign in manually.");
+      return;
+    }
+
+    window.location.href = "/files";
   }
 
   return (

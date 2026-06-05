@@ -2,6 +2,8 @@
 import { useState } from "react";
 import {
   Cloud,
+  Eye,
+  EyeOff,
   File,
   FileText,
   Folder,
@@ -13,6 +15,7 @@ import {
   Sparkles,
   Trash2,
   User,
+  UserPlus,
 } from "lucide-react";
 import { signIn } from "next-auth/react";
 import { Button } from "@/components/ui/button";
@@ -29,6 +32,8 @@ export default function Signup() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [agreed, setAgreed] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -174,12 +179,19 @@ export default function Signup() {
                   <div className="rounded-lg bg-[#0A1628] border border-[#4A9EFF]/40 flex px-3 items-center gap-2">
                     <Lock className="size-4 text-[#4A9EFF]" />
                     <input
-                      type="password"
+                      type={showPassword ? "text" : "password"}
                       placeholder="••••••••"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       className="bg-transparent outline-none text-white text-sm leading-5 py-2 w-full"
                     />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((v) => !v)}
+                      className="text-white/40 hover:text-white/70 transition-colors"
+                    >
+                      {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                    </button>
                   </div>
                 </div>
                 <div className="flex flex-col gap-2">
@@ -189,12 +201,19 @@ export default function Signup() {
                   <div className="rounded-lg bg-[#0A1628] border border-[#4A9EFF]/40 flex px-3 items-center gap-2">
                     <ShieldCheck className="size-4 text-[#4A9EFF]" />
                     <input
-                      type="password"
+                      type={showConfirmPassword ? "text" : "password"}
                       placeholder="••••••••"
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       className="bg-transparent outline-none text-white text-sm leading-5 py-2 w-full"
                     />
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirmPassword((v) => !v)}
+                      className="text-white/40 hover:text-white/70 transition-colors"
+                    >
+                      {showConfirmPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                    </button>
                   </div>
                 </div>
                 <div className="flex items-start gap-2">
@@ -219,6 +238,7 @@ export default function Signup() {
                   disabled={loading}
                   className="shadow-[0_0_20px_rgba(74,158,255,0.5)] font-bold rounded-lg bg-[#4A9EFF] text-white py-2 w-full disabled:opacity-60"
                 >
+                  <UserPlus className="size-4" />
                   {loading ? "Creating account…" : "Create Account"}
                 </Button>
                 <div className="flex items-center gap-4">

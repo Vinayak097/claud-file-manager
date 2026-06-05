@@ -9,6 +9,7 @@ import {
   Image,
   LayoutGrid,
   List,
+  LogOut,
   MoreVertical,
   Music,
   Search,
@@ -19,12 +20,14 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 
 export default function page() {
   const [file,setFiles]=useState()
   const [folders,setFolders]=useState()
+  const [profileOpen, setProfileOpen]=useState(false)
  const [user,setUser]=useState<any>()
+ const [loading,setLoading]=useState(false)
  const session = useSession()
  console.log("user " , user)
   useEffect(()=>{
@@ -34,7 +37,11 @@ export default function page() {
      }
   },[])
 
-  
+  function handleLogout(){
+    signOut({
+      callbackUrl:'/'
+    })
+  }
   return (
     <div>
       <div className="bg-zinc-950 text-neutral-50 w-full h-fit h-fit min-h-screen w-screen min-w-screen max-w-screen overflow-visible">
@@ -69,9 +76,21 @@ export default function page() {
                 className="rounded-lg bg-zinc-800 text-neutral-50 text-sm leading-5 border-white/10 border-1 border-solid pl-9 pr-3 w-full h-9"
               />
             </div>
-            <div className="size-9 font-semibold rounded-full bg-[#155dfc]/20 text-[#155dfc] text-sm leading-5 border-[#155dfc]/40 border-1 border-solid flex justify-center items-center">
+            <Button onClick={()=>{setProfileOpen(true)}} className="size-9 cursor-pointer font-semibold rounded-full bg-[#155dfc]/20 text-[#155dfc] text-sm leading-5 border-[#155dfc]/40 border-1 border-solid flex justify-center items-center">
               AM
-            </div>
+            </Button>
+            {profileOpen==true && (
+              <div className=" absolute right-10 top-8 p-2">
+                <button onClick={async ()=>await handleLogout()} className="group px-2 py-1  flex items-center gap-2 rounded-lg border text-sm leading-5 font-medium border-[#155dfc]">
+                      <span>Logout</span>
+                      <LogOut className="group-hover:text-[#155dfc] transition-colors size-4 "></LogOut>
+
+                </button>
+
+
+              </div>
+            )}
+            
           </div>
         </header>
         <main className="flex p-8 flex-col gap-6 w-full">

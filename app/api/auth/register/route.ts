@@ -5,7 +5,7 @@ import { prisma } from "@/lib/prisma";
 export async function POST(req: NextRequest) {
   const { name, email, password } = await req.json();
 
-  if (!name || !email || !password) {
+  if ( !email || !password) {
     return NextResponse.json(
       { message: "All fields are required." },
       { status: 400 },
@@ -17,38 +17,37 @@ export async function POST(req: NextRequest) {
       { status: 400 },
     );
   }
+  try {
+    const existing = await prisma.user.findUnique({ where: { email } });
+    if (existing) {
+      return NextResponse.json(
+        { message: "An account with this email already exists. Please sign in." },
+        { status: 409 },
+      );
+    }
 
-  const user = await prisma.user.findMany({
-    where: {
-      email,
-    },
-  });
-  if (!user) {
-    return NextResponse.json({
-      status: 404,
-      error: "user alerady exist please signin",
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    await prisma.user.create({
+      data: {
+        email,
+        password: hashedPassword,
+        name,
+        provider: "credential",
+      },
+      select: { email: true, name: true },
     });
+
+    return NextResponse.json(
+      { message: "Account created." },
+      { status: 201 },
+    );
+  } catch (e) {
+    console.error("Register error:", e);
+    return NextResponse.json(
+      { message: "Internal server error." },
+      { status: 500 },
+    );
   }
-
-  const hashedPassword = await bcrypt.hash(password, 10);
-
-  const newUser = await prisma.user.create({
-    data: {
-      email,
-      password: hashedPassword,
-      name,
-      provider: "credential",
-    },
-    select: {
-      email,
-      name,
-    },
-  });
-
-  // TODO: save { name, email, hashedPassword } to your database here
-
-  return NextResponse.json(
-    { message: "Account created.", status: 201 },
-    { status: 201 },
-  );
+  
 }

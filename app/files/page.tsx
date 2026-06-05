@@ -27,10 +27,9 @@ import type { TypeFolder } from "@/lib/types/file";
 import type { ResponseType } from "@/lib/types/file";
 import Folders from "@/components/Folder";
 
-
 export default function page() {
   const [file,setFiles]=useState<TypeFile[]|[]>()
-  const [folders,setFolders]=useState<TypeFolder[]|[]>()
+  const [folders,setFolders]=useState<TypeFolder[]|[]>([])
   const [profileOpen, setProfileOpen]=useState(false)
  const [user,setUser]=useState<any>()
  const [loading,setLoading]=useState(false)
@@ -57,17 +56,25 @@ export default function page() {
      }
   },[])
   useEffect(()=>{
-    FetchOjbects("")
+    async function main(){
+      console.log("calling the fetchojbectes")
+      await FetchOjbects("")
+
+    }
+    main()
+    
   },[])
+
   async function  FetchOjbects(prefix:string) {
    
     try{
-       const response=await fetch('/api/object')
-    console.log("response " , response)
+       const response=await fetch(`/api/object?prefix=${prefix}`)
+    
     if(!response.ok){
       setError("Failed to fetch Files")
     }    
     const data:ResponseType= await response.json()
+    console.log(data , 'data this is ')
     setFiles(data.files)
     setFolders(data.folders)
     }catch(e){
@@ -175,7 +182,7 @@ export default function page() {
               ):
               (
               <>
-              {data.Folders.map((folder, i)=>(
+              {folders.length==0 && folders.map((folder:TypeFolder, i)=>(
                 <Folders key={i} name={folder.name}></Folders>
               ))}
               </>

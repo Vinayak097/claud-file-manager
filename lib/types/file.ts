@@ -5,7 +5,7 @@ export interface TypeFile{
 }
 
 export interface TypeFolder{
-    prefix:string
+    name:string
 }
 
 export type ResponseType={

@@ -21,6 +21,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useEffect, useState } from "react";
 import { signOut, useSession } from "next-auth/react";
+import File from "@/components/File";
+import Folders from "@/components/Folder";
 
 export default function page() {
   const [file,setFiles]=useState()
@@ -30,8 +32,18 @@ export default function page() {
  const [loading,setLoading]=useState(false)
  const session = useSession()
  console.log("user " , user)
+ const data= {
+  files:[{
+    name:'file.pdf',
+    size:233,
+    lastModified:"2026-06-04T07:35:03.000Z"
+
+  }],
+  Folders:[{
+    name:"/newfolder"
+  }]
+ }
   useEffect(()=>{
-     
      if(session.data){
       setUser(session.data.user)
      }
@@ -125,64 +137,20 @@ export default function page() {
               Folders
             </h2>
             <div className="grid grid-cols-4 gap-4">
-              <Card className="cursor-pointer transition-colors bg-zinc-900 border-white/10 border-0 border-solid p-4 gap-0">
-                <CardContent className="flex p-0 items-center gap-3">
-                  <div className="size-10 rounded-lg bg-[#155dfc]/15 flex justify-center items-center">
-                    <Folder className="size-5 text-[#155dfc]" />
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="font-medium text-sm leading-5">
-                      Documents
-                    </span>
-                    <span className="text-[#9f9fa9] text-xs leading-4">
-                      24 files
-                    </span>
-                  </div>
-                </CardContent>
-              </Card>
-              <Card className="cursor-pointer transition-colors bg-zinc-900 border-white/10 border-0 border-solid p-4 gap-0">
-                <CardContent className="flex p-0 items-center gap-3">
-                  <div className="size-10 rounded-lg bg-[#155dfc]/15 flex justify-center items-center">
-                    <Folder className="size-5 text-[#155dfc]" />
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="font-medium text-sm leading-5">
-                      Photos
-                    </span>
-                    <span className="text-[#9f9fa9] text-xs leading-4">
-                      128 files
-                    </span>
-                  </div>
-                </CardContent>
-              </Card>
-              <Card className="cursor-pointer transition-colors bg-zinc-900 border-white/10 border-0 border-solid p-4 gap-0">
-                <CardContent className="flex p-0 items-center gap-3">
-                  <div className="size-10 rounded-lg bg-[#155dfc]/15 flex justify-center items-center">
-                    <Folder className="size-5 text-[#155dfc]" />
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="font-medium text-sm leading-5">Music</span>
-                    <span className="text-[#9f9fa9] text-xs leading-4">
-                      56 files
-                    </span>
-                  </div>
-                </CardContent>
-              </Card>
-              <Card className="cursor-pointer transition-colors bg-zinc-900 border-white/10 border-0 border-solid p-4 gap-0">
-                <CardContent className="flex p-0 items-center gap-3">
-                  <div className="size-10 rounded-lg bg-[#155dfc]/15 flex justify-center items-center">
-                    <Folder className="size-5 text-[#155dfc]" />
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="font-medium text-sm leading-5">
-                      Projects
-                    </span>
-                    <span className="text-[#9f9fa9] text-xs leading-4">
-                      12 files
-                    </span>
-                  </div>
-                </CardContent>
-              </Card>
+              {data.Folders.length==0? (
+                <div className="w-md p-2">
+                  <p>you dont have any Folders</p>
+                </div>
+              ):
+              (
+              <>
+              {data.Folders.map((folder, i)=>(
+                <Folders key={i} name={folder.name}></Folders>
+              ))}
+              </>
+              )   
+                
+              }
             </div>
           </div>
           <div className="flex flex-col gap-3">
@@ -197,114 +165,12 @@ export default function page() {
                 <span>Modified</span>
                 <span className="w-8" />
               </div>
-              <div className="grid grid-cols-[2fr_1fr_1fr_1fr_auto] transition-colors border-white/10 border-t-0 border-r-0 border-b-1 border-l-0 border-solid px-6 py-4 items-center gap-4">
-                <div className="flex items-center gap-3">
-                  <div className="size-9 rounded-lg bg-[#00bc7d]/15 flex justify-center items-center">
-                    <FileText className="size-4 text-[#00bc7d]" />
-                  </div>
-                  <span className="font-medium text-sm leading-5">
-                    Annual Report 2024.pdf
-                  </span>
-                </div>
-                <span className="text-[#9f9fa9] text-sm leading-5">2.4 MB</span>
-                <span className="text-[#9f9fa9] text-sm leading-5">PDF</span>
-                <span className="text-[#9f9fa9] text-sm leading-5">
-                  Jan 12, 2025
-                </span>
-                <button className="size-8 rounded-md text-[#9f9fa9] flex justify-center items-center">
-                  <MoreVertical className="size-4" />
-                </button>
-              </div>
-              <div className="grid grid-cols-[2fr_1fr_1fr_1fr_auto] transition-colors border-white/10 border-t-0 border-r-0 border-b-1 border-l-0 border-solid px-6 py-4 items-center gap-4">
-                <div className="flex items-center gap-3">
-                  <div className="size-9 rounded-lg bg-[#ad46ff]/15 flex justify-center items-center">
-                    <Image className="size-4 text-[#ad46ff]" />
-                  </div>
-                  <span className="font-medium text-sm leading-5">
-                    Vacation Sunset.jpg
-                  </span>
-                </div>
-                <span className="text-[#9f9fa9] text-sm leading-5">5.1 MB</span>
-                <span className="text-[#9f9fa9] text-sm leading-5">Image</span>
-                <span className="text-[#9f9fa9] text-sm leading-5">
-                  Jan 10, 2025
-                </span>
-                <button className="size-8 rounded-md text-[#9f9fa9] flex justify-center items-center">
-                  <MoreVertical className="size-4" />
-                </button>
-              </div>
-              <div className="grid grid-cols-[2fr_1fr_1fr_1fr_auto] transition-colors border-white/10 border-t-0 border-r-0 border-b-1 border-l-0 border-solid px-6 py-4 items-center gap-4">
-                <div className="flex items-center gap-3">
-                  <div className="size-9 rounded-lg bg-[#fe9a00]/15 flex justify-center items-center">
-                    <Music className="size-4 text-[#fe9a00]" />
-                  </div>
-                  <span className="font-medium text-sm leading-5">
-                    Podcast Episode 12.mp3
-                  </span>
-                </div>
-                <span className="text-[#9f9fa9] text-sm leading-5">18 MB</span>
-                <span className="text-[#9f9fa9] text-sm leading-5">Audio</span>
-                <span className="text-[#9f9fa9] text-sm leading-5">
-                  Jan 08, 2025
-                </span>
-                <button className="size-8 rounded-md text-[#9f9fa9] flex justify-center items-center">
-                  <MoreVertical className="size-4" />
-                </button>
-              </div>
-              <div className="grid grid-cols-[2fr_1fr_1fr_1fr_auto] transition-colors border-white/10 border-t-0 border-r-0 border-b-1 border-l-0 border-solid px-6 py-4 items-center gap-4">
-                <div className="flex items-center gap-3">
-                  <div className="size-9 rounded-lg bg-[#ff2056]/15 flex justify-center items-center">
-                    <FileSpreadsheet className="size-4 text-[#ff2056]" />
-                  </div>
-                  <span className="font-medium text-sm leading-5">
-                    Budget Q1.xlsx
-                  </span>
-                </div>
-                <span className="text-[#9f9fa9] text-sm leading-5">820 KB</span>
-                <span className="text-[#9f9fa9] text-sm leading-5">Sheet</span>
-                <span className="text-[#9f9fa9] text-sm leading-5">
-                  Jan 05, 2025
-                </span>
-                <button className="size-8 rounded-md text-[#9f9fa9] flex justify-center items-center">
-                  <MoreVertical className="size-4" />
-                </button>
-              </div>
-              <div className="grid grid-cols-[2fr_1fr_1fr_1fr_auto] transition-colors border-white/10 border-t-0 border-r-0 border-b-1 border-l-0 border-solid px-6 py-4 items-center gap-4">
-                <div className="flex items-center gap-3">
-                  <div className="size-9 rounded-lg bg-[#155dfc]/15 flex justify-center items-center">
-                    <FileVideo className="size-4 text-[#155dfc]" />
-                  </div>
-                  <span className="font-medium text-sm leading-5">
-                    Demo Recording.mp4
-                  </span>
-                </div>
-                <span className="text-[#9f9fa9] text-sm leading-5">142 MB</span>
-                <span className="text-[#9f9fa9] text-sm leading-5">Video</span>
-                <span className="text-[#9f9fa9] text-sm leading-5">
-                  Jan 03, 2025
-                </span>
-                <button className="size-8 rounded-md text-[#9f9fa9] flex justify-center items-center">
-                  <MoreVertical className="size-4" />
-                </button>
-              </div>
-              <div className="grid grid-cols-[2fr_1fr_1fr_1fr_auto] transition-colors px-6 py-4 items-center gap-4">
-                <div className="flex items-center gap-3">
-                  <div className="size-9 rounded-lg bg-[#00bc7d]/15 flex justify-center items-center">
-                    <FileText className="size-4 text-[#00bc7d]" />
-                  </div>
-                  <span className="font-medium text-sm leading-5">
-                    Meeting Notes.docx
-                  </span>
-                </div>
-                <span className="text-[#9f9fa9] text-sm leading-5">340 KB</span>
-                <span className="text-[#9f9fa9] text-sm leading-5">Doc</span>
-                <span className="text-[#9f9fa9] text-sm leading-5">
-                  Dec 28, 2024
-                </span>
-                <button className="size-8 rounded-md text-[#9f9fa9] flex justify-center items-center">
-                  <MoreVertical className="size-4" />
-                </button>
-              </div>
+              
+              {data.files.length!==0 && (
+                data.files.map((file:any)=>(
+                  <File lastModified={file.lastModified} name={file.name} size={file.size}></File>
+                ))
+              )}
             </Card>
           </div>
         </main>

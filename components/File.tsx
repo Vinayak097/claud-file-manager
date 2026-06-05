@@ -1,7 +1,7 @@
 import { Music, MoreVertical } from 'lucide-react'
 interface FileParam{
-  key:string,
-  dateModified:string,
+  name:string,
+  lastModified:string,
   size:string,
   type?:string
 }
@@ -13,7 +13,7 @@ const File = (prop:FileParam) => {
                         <Music className="size-4 text-[#fe9a00]" />
                       </div>
                       <span className="font-medium text-sm leading-5">
-                        {prop.key}
+                        {prop.name}
                       </span>
                     </div>
                     <span className="text-[#9f9fa9] text-sm leading-5">{prop.size}</span>

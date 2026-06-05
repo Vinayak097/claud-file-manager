@@ -23,10 +23,10 @@ export async function GET(req: NextRequest) {
   });
 
   const result = await client.send(command);
-
+  console.log(result ,  ' result')
   const files =
     result.Contents?.map((file) => ({
-      key: file.Key,
+      name: file.Key,
       size: file.Size,
       lastModified: file.LastModified,
     })) || [];

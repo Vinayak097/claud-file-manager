@@ -10,10 +10,10 @@ const Folders = ({name}:{name:string}) => {
                     <Folder className="size-5 text-[#155dfc]" />
                   </div>
                   <div className="flex flex-col">
-                    <span className="font-medium text-sm leading-5">
+                    <span className="font-medium text-white text-sm leading-5">
                       {name}
                     </span>
-                    <span className="text-[#9f9fa9] text-xs leading-4">
+                    <span className="text-white text-xs leading-4">
                       12 files
                     </span>
                   </div>

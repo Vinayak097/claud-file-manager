@@ -19,7 +19,7 @@ const File = (prop:FileParam) => {
                     <span className="text-[#9f9fa9] text-sm leading-5">{prop.size}</span>
                     <span className="text-[#9f9fa9] text-sm leading-5">Audio</span>
                     <span className="text-[#9f9fa9] text-sm leading-5">
-                      {prop.dateModified}
+                      {prop.lastModified}
                     </span>
                     <button className="size-8 rounded-md text-[#9f9fa9] flex justify-center items-center">
                       <MoreVertical className="size-4" />

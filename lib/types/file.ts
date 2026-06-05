@@ -1,9 +1,15 @@
-export interface File{
-    key:string,
-    ModifiedDate:string,
+export interface TypeFile{
+    name:string,
+    LastModified:string,
     size:string
 }
 
-export interface Folder{
+export interface TypeFolder{
     prefix:string
+}
+
+export type ResponseType={
+    files:TypeFile[],
+    folders:TypeFolder[]
+
 }

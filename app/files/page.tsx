@@ -22,33 +22,66 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useEffect, useState } from "react";
 import { signOut, useSession } from "next-auth/react";
 import File from "@/components/File";
+import type { TypeFile } from "@/lib/types/file";
+import type { TypeFolder } from "@/lib/types/file";
+import type { ResponseType } from "@/lib/types/file";
 import Folders from "@/components/Folder";
 
+
 export default function page() {
-  const [file,setFiles]=useState()
-  const [folders,setFolders]=useState()
+  const [file,setFiles]=useState<TypeFile[]|[]>()
+  const [folders,setFolders]=useState<TypeFolder[]|[]>()
   const [profileOpen, setProfileOpen]=useState(false)
  const [user,setUser]=useState<any>()
  const [loading,setLoading]=useState(false)
+ const [folderLoading , setFolderLoading]=useState(false)
+ const [Error , setError]=useState<String| null>(null)
  const session = useSession()
+
  console.log("user " , user)
+
  const data= {
   files:[{
     name:'file.pdf',
     size:233,
     lastModified:"2026-06-04T07:35:03.000Z"
-
   }],
   Folders:[{
     name:"/newfolder"
   }]
  }
+
   useEffect(()=>{
      if(session.data){
       setUser(session.data.user)
      }
   },[])
+  useEffect(()=>{
+    FetchOjbects("")
+  },[])
+  async function  FetchOjbects(prefix:string) {
+   
+    try{
+       const response=await fetch('/api/object')
+    console.log("response " , response)
+    if(!response.ok){
+      setError("Failed to fetch Files")
+    }    
+    const data:ResponseType= await response.json()
+    setFiles(data.files)
+    setFolders(data.folders)
+    }catch(e){
+      setError("Failed to fetch files check ur network")
+    }
+    finally{
+      setLoading(false)
+      setTimeout(() => {
+        setError(null)
+      }, 5000);
 
+    }
+   
+  }
   function handleLogout(){
     signOut({
       callbackUrl:'/'
@@ -98,8 +131,6 @@ export default function page() {
                       <LogOut className="group-hover:text-[#155dfc] transition-colors size-4 "></LogOut>
 
                 </button>
-
-
               </div>
             )}
             

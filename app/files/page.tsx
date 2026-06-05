@@ -26,13 +26,15 @@ import type { TypeFile } from "@/lib/types/file";
 import type { TypeFolder } from "@/lib/types/file";
 import type { ResponseType } from "@/lib/types/file";
 import Folders from "@/components/Folder";
+import FolderSkeleton from "@/components/FolderSkeleton";
+import FileSkeleton from "@/components/FileSkeleton";
 
 export default function page() {
   const [files,setFiles]=useState<TypeFile[]|[]>([])
   const [folders,setFolders]=useState<TypeFolder[]|[]>([])
   const [profileOpen, setProfileOpen]=useState(false)
  const [user,setUser]=useState<any>()
- const [loading,setLoading]=useState(false)
+ const [loading,setLoading]=useState(true)
  const [folderLoading , setFolderLoading]=useState(false)
  const [Error , setError]=useState<String| null>(null)
  const session = useSession()
@@ -139,9 +141,7 @@ export default function page() {
         <main className="flex p-8 flex-col gap-6 w-full">
           <div className="flex justify-between items-center">
             <div className="flex flex-col gap-1">
-              <h1 className="font-bold text-2xl leading-8 tracking-tight">
-                My Files
-              </h1>
+              
               <div className="text-[#9f9fa9] text-sm leading-5 flex items-center gap-2">
                 <span className="cursor-pointer">Home</span>
                 <ChevronRight className="size-3.5" />
@@ -168,20 +168,17 @@ export default function page() {
               Folders
             </h2>
             <div className="grid grid-cols-4 gap-4">
-              {folders.length==0? (
+              {loading ? (
+                Array.from({length: 4}).map((_, i) => <FolderSkeleton key={i} />)
+              ) : folders.length === 0 ? (
                 <div className="w-md p-2">
                   <p>you dont have any Folders</p>
                 </div>
-              ):
-              (
-              <>
-              { folders.map((folder:TypeFolder, i)=>(
-                <Folders key={i} name={folder.name}></Folders>
-              ))}
-              </>
-              )   
-                
-              }
+              ) : (
+                folders.map((folder: TypeFolder, i) => (
+                  <Folders key={i} name={folder.name} />
+                ))
+              )}
             </div>
           </div>
           <div className="flex flex-col gap-3">
@@ -197,12 +194,11 @@ export default function page() {
                 <span className="w-8" />
               </div>
               
-              {files.length!==0 && (
-                files.map((file:any ,i)=>(
-                 
-                    <File key={i} lastModified={file.lastModified} name={file.name} size={file.size}></File>
-
-                 
+              {loading ? (
+                Array.from({length: 4}).map((_, i) => <FileSkeleton key={i} />)
+              ) : (
+                files.map((file: any, i) => (
+                  <File key={i} lastModified={file.lastModified} name={file.name} size={file.size} />
                 ))
               )}
             </Card>

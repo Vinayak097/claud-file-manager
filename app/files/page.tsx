@@ -10,8 +10,6 @@ import {
   LayoutGrid,
   List,
   LogOut,
-  MoreVertical,
-  Music,
   Search,
   Share2,
   Trash2,
@@ -28,7 +26,11 @@ import type { ResponseType } from "@/lib/types/file";
 import Folders from "@/components/Folder";
 import FolderSkeleton from "@/components/FolderSkeleton";
 import FileSkeleton from "@/components/FileSkeleton";
-
+import { permanentRedirect, redirect } from "next/navigation";
+type TypePathStack={
+  folder:string,
+  id:string
+}
 export default function page() {
   const [files,setFiles]=useState<TypeFile[]|[]>([])
   const [folders,setFolders]=useState<TypeFolder[]|[]>([])
@@ -37,34 +39,37 @@ export default function page() {
  const [loading,setLoading]=useState(true)
  const [folderLoading , setFolderLoading]=useState(false)
  const [Error , setError]=useState<String| null>(null)
+ const [pathStack  , setPathstack] =  useState<TypePathStack[]>([{id:"",folder:"All files"}])
+ const currentFolder = pathStack[pathStack.length - 1]
  const session = useSession()
 
  console.log("user " , user)
 
 
 
+
+
   useEffect(()=>{
-     if(session.data){
+     if(session.data && session.data.user){
       setUser(session.data.user)
      }
-  },[])
+     else{
+      redirect('/')
+     }
+  },[user])
+
   useEffect(()=>{
     async function main(){
       console.log("calling the fetchojbectes")
-      await FetchOjbects("")
-
+      await FetchOjbects(currentFolder.id)
     }
     main()
-    
-  },[])
+  },[currentFolder.id])
 
   async function  FetchOjbects(prefix:string) {
    
     try{
        const response=await fetch(`/api/object?prefix=${prefix}`)
-
-       
-    
     if(!response.ok){
       setError("Failed to fetch Files")
     }    
@@ -80,14 +85,26 @@ export default function page() {
       setTimeout(() => {
         setError(null)
       }, 5000);
-
     }
-   
   }
   function handleLogout(){
     signOut({
       callbackUrl:'/'
     })
+  }
+  const handleFolderClick=(folder:TypeFolder)=>{ 
+    const id =currentFolder.id+folder.name
+    console.log(" id is this is new id generated " , id )
+    const obj={id:id,
+      name:folder.name
+    }
+    
+    setPathstack(prev=>[...prev,{id:obj.id,folder:obj.name}])
+  }
+  const handleBreadcrumbClick=(index:number)=>{
+    setPathstack(prev=>prev.slice(0,index+1))
+
+
   }
   return (
     <div>
@@ -140,13 +157,25 @@ export default function page() {
         </header>
         <main className="flex p-8 flex-col gap-6 w-full">
           <div className="flex justify-between items-center">
-            <div className="flex flex-col gap-1">
-              
-              <div className="text-[#9f9fa9] text-sm leading-5 flex items-center gap-2">
-                <span className="cursor-pointer">Home</span>
-                <ChevronRight className="size-3.5" />
-                <span className="text-neutral-50">All Files</span>
-              </div>
+            <div className="flex flex-col gap-1.5">
+              <h1 className="font-bold text-2xl leading-8 tracking-tight text-neutral-50">
+                My Files
+              </h1>
+              <nav className="flex items-center gap-1.5 text-sm leading-5">
+                {pathStack.map((crumb:TypePathStack,i)=>{
+                  const last=i===pathStack.length-1 
+                  return (
+                  <div  key={i} className="flex items-center gap-2">
+                    <button className={`${!last && "  hover:border-b text-w/10"} `} 
+                    onClick={()=>{ !last && handleBreadcrumbClick(i)
+                    }}>{crumb.folder}</button>
+                    {!last &&
+                    <ChevronRight className="size-3 text-[#9f9fa9]/50 shrink-0" />}
+                     
+                    
+                  </div>)
+})}
+              </nav>
             </div>
             <div className="flex items-center gap-3">
               <div className="rounded-lg bg-zinc-800 border-white/10 border-1 border-solid flex p-1 items-center">
@@ -176,7 +205,11 @@ export default function page() {
                 </div>
               ) : (
                 folders.map((folder: TypeFolder, i) => (
+                  <Button onClick={()=>{handleFolderClick(folder)}}>
+
+                
                   <Folders key={i} name={folder.name} />
+                    </Button>
                 ))
               )}
             </div>

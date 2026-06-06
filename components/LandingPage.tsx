@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+"use client"
 import {
   Cloud,
   FileText,
@@ -38,7 +38,7 @@ export default function LandingPage() {
                 CloudVault
               </span>
             </div>
-            <Navbar></Navbar>
+          
           </div>
           <div className="flex items-center gap-4">
             <Button

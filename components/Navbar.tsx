@@ -12,7 +12,7 @@ const Navbar = () => {
           <Cloud className="size-4 text-[#4A9EFF]" />
           CloudVault
         </a>
-        <a className="flex items-center gap-2 px-4 py-1.5 rounded-lg text-white/60 hover:text-white/90 transition-colors border-b-2 border-transparent cursor-pointer">
+        <a href='/files' className="flex items-center gap-2 px-4 py-1.5 rounded-lg text-white/60 hover:text-white/90 transition-colors border-b-2 border-transparent cursor-pointer">
           <FileText className="size-4" />
           Files
         </a>

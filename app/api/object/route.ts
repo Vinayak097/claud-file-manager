@@ -7,7 +7,7 @@ import {
 
 const client = new S3Client({
   credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY!,
+    accessKeyId: process.env.AWS_ACCESS_KEY_k!,
     secretAccessKey: process.env.AWS_SECRET_KEY!,
   },
   region: "ap-southeast-2",

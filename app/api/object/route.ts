@@ -8,10 +8,11 @@ import {
 const client = new S3Client({
   credentials: {
     accessKeyId: process.env.AWS_ACCESS_KEY_k!,
-    secretAccessKey: process.env.AWS_SECRET_KEY!,
+    secretAccessKey: process.env.AWS_SECRET_KEY_k!,
   },
   region: "ap-southeast-2",
 });
+
 export async function GET(req: NextRequest) {
   const prefix = req.nextUrl.searchParams.get("prefix") ?? "";
 

@@ -3,6 +3,7 @@ import {
   ChevronRight,
   Cloud,
   FileText,
+  Folder,
   FolderPlus,
   LayoutGrid,
   List,
@@ -34,6 +35,7 @@ export default function page() {
   const [showNewFolder, setShowNewFolder] = useState(false)
   const [uploadItems, setUploadItems] = useState<UploadItem[]>([])
   const [pathStack, setPathStack] = useState<PathCrumb[]>([{ id: "", label: "All Files" }])
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
 
   const currentFolder = pathStack[pathStack.length - 1]
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -216,9 +218,9 @@ export default function page() {
                       <button
                         onClick={() => handleBreadcrumbClick(i)}
                         className="text-[#9f9fa9] hover:text-neutral-50 transition-colors"
-                      >
+                      > 
                         {crumb.label}
-                      </button>
+                      </button> 
                     )}
                     {!isLast && <ChevronRight className="size-3 text-[#9f9fa9]/50 shrink-0" />}
                   </div>
@@ -229,10 +231,16 @@ export default function page() {
 
           <div className="flex items-center gap-3">
             <div className="rounded-lg bg-zinc-800 border border-white/10 flex p-1 items-center">
-              <button className="size-7 rounded-sm bg-[#155dfc]/20 text-[#155dfc] flex justify-center items-center">
+              <button
+                onClick={() => setViewMode("grid")}
+                className={`size-7 rounded-sm flex justify-center items-center transition-colors ${viewMode === "grid" ? "bg-[#155dfc]/20 text-[#155dfc]" : "text-[#9f9fa9] hover:text-neutral-50"}`}
+              >
                 <LayoutGrid className="size-4" />
               </button>
-              <button className="size-7 rounded-sm text-[#9f9fa9] flex justify-center items-center hover:text-neutral-50 transition-colors">
+              <button
+                onClick={() => setViewMode("list")}
+                className={`size-7 rounded-sm flex justify-center items-center transition-colors ${viewMode === "list" ? "bg-[#155dfc]/20 text-[#155dfc]" : "text-[#9f9fa9] hover:text-neutral-50"}`}
+              >
                 <List className="size-4" />
               </button>
             </div>
@@ -241,7 +249,7 @@ export default function page() {
               className="flex items-center gap-2 px-4 h-9 rounded-lg border border-white/10 bg-zinc-800 hover:bg-zinc-700 text-neutral-50 text-sm font-medium transition-colors"
             >
               <FolderPlus className="size-4" />
-              New folder
+              New folder   
             </button>
             <Button
               onClick={handleUploadClick}
@@ -263,42 +271,96 @@ export default function page() {
         {/* Folders */}
         <div className="flex flex-col gap-3">
           <h2 className="font-semibold text-[#9f9fa9] text-sm">Folders</h2>
-          <div className="grid grid-cols-4 gap-4">
-            {loading ? (
-              Array.from({ length: 4 }).map((_, i) => <FolderSkeleton key={i} />)
-            ) : folders.length === 0 ? (
-              <p className="text-[#9f9fa9] text-sm">No folders yet</p>
-            ) : (
-              folders.map((folder, i) => (
-                <div key={folder.name ?? i} onClick={() => handleFolderClick(folder)} className="cursor-pointer">
-                  <Folders name={folder.name.replace(/\/$/, "").split("/").pop() ?? folder.name} />
-                </div>
-              ))
-            )}
-          </div>
+          {viewMode === "grid" ? (
+            <div className="grid grid-cols-4 gap-4">
+              {loading ? (
+                Array.from({ length: 4 }).map((_, i) => <FolderSkeleton key={i} />)
+              ) : folders.length === 0 ? (
+                <p className="text-[#9f9fa9] text-sm">No folders yet</p>
+              ) : (
+                folders.map((folder, i) => (
+                  <div key={folder.name ?? i} onClick={() => handleFolderClick(folder)} className="cursor-pointer">
+                    <Folders name={folder.name.replace(/\/$/, "").split("/").pop() ?? folder.name} />
+                  </div>
+                ))
+              )}
+            </div>
+          ) : (
+            <Card className="bg-zinc-900 border-white/10 border-0 p-0 gap-0 overflow-hidden">
+              {loading ? (
+                Array.from({ length: 4 }).map((_, i) => <FolderSkeleton key={i} />)
+              ) : folders.length === 0 ? (
+                <p className="text-[#9f9fa9] text-sm px-6 py-4">No folders yet</p>
+              ) : (
+                folders.map((folder, i) => {
+                  const displayName = folder.name.replace(/\/$/, "").split("/").pop() ?? folder.name
+                  return (
+                    <div
+                      key={folder.name ?? i}
+                      onClick={() => handleFolderClick(folder)}
+                      className="grid grid-cols-[2fr_1fr_1fr_1fr_auto] cursor-pointer hover:bg-white/5 transition-colors text-white border-b border-white/10 last:border-b-0 px-6 py-4 items-center gap-4"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="size-9 rounded-lg bg-[#155dfc]/15 flex justify-center items-center">
+                          <Folder className="size-4 text-[#155dfc]" />
+                        </div>
+                        <span className="font-medium text-sm leading-5">{displayName}</span>
+                      </div>
+                      <span className="text-[#9f9fa9] text-sm">—</span>
+                      <span className="text-[#9f9fa9] text-sm">Folder</span>
+                      <span className="text-[#9f9fa9] text-sm">—</span>
+                      <span className="w-8" />
+                    </div>
+                  )
+                })
+              )}
+            </Card>
+          )}
         </div>
 
         {/* Files */}
         <div className="flex flex-col gap-3">
           <h2 className="font-semibold text-[#9f9fa9] text-sm">Files</h2>
-          <Card className="bg-zinc-900 border-white/10 border-0 p-0 gap-0 overflow-hidden">
-            <div className="grid grid-cols-[2fr_1fr_1fr_1fr_auto] font-semibold uppercase text-[#9f9fa9] text-xs tracking-wide border-b border-white/10 px-6 py-3 items-center gap-4">
-              <span>Name</span>
-              <span>Size</span>
-              <span>Type</span>
-              <span>Modified</span>
-              <span className="w-8" />
+          {viewMode === "grid" ? (
+            <div className="grid grid-cols-4 gap-4">
+              {loading ? (
+                Array.from({ length: 4 }).map((_, i) => <FileSkeleton key={i} />)
+              ) : files.length === 0 ? (
+                <p className="text-[#9f9fa9] text-sm">No files yet</p>
+              ) : (
+                files.map((file, i) => (
+                  <Card key={file.name ?? i} className="bg-zinc-900 border-white/10 border-0 p-4 flex flex-col gap-3">
+                    <div className="size-10 rounded-lg bg-[#fe9a00]/15 flex justify-center items-center">
+                      <FileText className="size-5 text-[#fe9a00]" />
+                    </div>
+                    <div className="flex flex-col gap-0.5">
+                      <span className="font-medium text-sm text-white truncate">{file.name.split("/").pop()}</span>
+                      <span className="text-[#9f9fa9] text-xs">{file.size}</span>
+                    </div>
+                  </Card>
+                ))
+              )}
             </div>
-            {loading ? (
-              Array.from({ length: 5 }).map((_, i) => <FileSkeleton key={i} />)
-            ) : files.length === 0 ? (
-              <p className="text-[#9f9fa9] text-sm px-6 py-4">No files yet</p>
-            ) : (
-              files.map((file, i) => (
-                <File key={file.name ?? i} lastModified={file.LastModified} name={file.name} size={file.size} />
-              ))
-            )}
-          </Card>
+          ) : (
+            <Card className="bg-zinc-900 border-white/10 border-0 p-0 gap-0 overflow-hidden">
+              <div className="grid grid-cols-[2fr_1fr_1fr_1fr_auto] font-semibold uppercase text-[#9f9fa9] text-xs tracking-wide border-b border-white/10 px-6 py-3 items-center gap-4">
+                <span>Name</span>
+                <span>Size</span>
+                <span>Type</span>
+                <span>Modified</span>
+                <span className="w-8" />
+              </div>
+              {loading ? (
+                Array.from({ length: 5 }).map((_, i) => <FileSkeleton key={i} />)
+              ) : files.length === 0 ? (
+                <p className="text-[#9f9fa9] text-sm px-6 py-4">No files yet</p>
+              ) : (
+                files.map((file, i) => (
+                  <File key={file.name ?? i} lastModified={file.LastModified} name={file.name} size={file.size} />
+                ))
+              )}
+            </Card>
+          )}
         </div>
       </main>
 
